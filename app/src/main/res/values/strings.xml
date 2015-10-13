@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Taboo</string>
+    <string name="title_activity_play_game">PlayGame</string>
+    <string name="title_activity_pre_game">PreGame</string>
+    <string name="title_activity_screen_ready">Screen_Ready</string>
+    <string name="title_activity_screen_end">Screen_End</string>
+    <string name="title_activity_screen_rounds">Screen_Rounds</string>
+    <string name="title_activity_screen_options">Screen_Options</string>
+    <string name="title_activity_screen_cards">Screen_Cards</string>
+    <string name="title_activity_screen_help">Screen_Help</string>
+    <string name="title_pick_teams">Teams</string>
+    <string name="title_team_start">Team Start!</string>
+    <string name="action_settings">Settings</string>
+    <string name="button_start">Start</string>
+    <string name="title_options">Options</string>
+    <string name="title_cards">Cards</string>
+    <string name="title_help">Help</string>
+    <string name="button_correct">Yay</string>
+    <string name="button_taboo">Boo</string>
+    <string name="button_pass">Pass</string>
+    <string name="game_word_title">Title</string>
+    <string name="game_word_1">Word 1</string>
+    <string name="game_word_2">Word 2</string>
+    <string name="game_word_3">Word 3</string>
+    <string name="game_word_4">Word 4</string>
+    <string name="game_word_5">Word 5</string>
+    <string name="button_pre_2">Two</string>
+    <string name="button_pre_3">Three</string>
+    <string name="button_pre_4">Four</string>
+    <string name="button_ready_go">Go!</string>
+    <string name="default_score">Score: 0</string>
+    <string name="button_play_again">Play Again</string>
+    <string name="button_menu">Menu</string>
+    <string name="title_rounds">Rounds</string>
+    <string name="button_rounds_plus">+</string>
+    <string name="button_rounds_minus">-</string>
+    <string name="button_rounds_start">03</string>
+    <string name="rounds_default_number">03</string>
+</resources>

@@ -1,0 +1,193 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context=".Screen_Play">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:orientation="vertical"
+        android:baselineAligned="false">
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/Score_Container">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/default_score"
+                android:id="@+id/Game_Score"
+                android:textSize="25sp" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/Clock_Container"
+            android:layout_marginBottom="40dp"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50"
+                android:id="@+id/Game_Timer"
+                android:textSize="60sp"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/Word_Container">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_word_title"
+                android:id="@+id/Word_Title"
+                android:editable="false"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textIsSelectable="false"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:singleLine="false"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_word_1"
+                android:id="@+id/Word_1"
+                android:editable="false"
+                android:textSize="25sp"
+                android:textIsSelectable="false"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:singleLine="false"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_word_2"
+                android:id="@+id/Word_2"
+                android:editable="false"
+                android:textSize="25sp"
+                android:textIsSelectable="false"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:singleLine="false"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_word_3"
+                android:id="@+id/Word_3"
+                android:editable="false"
+                android:textSize="25sp"
+                android:textIsSelectable="false"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:singleLine="false"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_word_4"
+                android:id="@+id/Word_4"
+                android:editable="false"
+                android:textSize="25sp"
+                android:textIsSelectable="false"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:singleLine="false"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_word_5"
+                android:id="@+id/Word_5"
+                android:editable="false"
+                android:textSize="25sp"
+                android:textIsSelectable="false"
+                android:gravity="center"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:singleLine="false"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:baselineAligned="false"
+            android:gravity="center"
+            android:clickable="false"
+            android:layout_marginTop="10dp"
+            android:id="@+id/Button_Container"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:text="@string/button_correct"
+                android:id="@+id/Game_Yay"
+                android:layout_gravity="center_horizontal"
+                android:enabled="true"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="25sp"
+                android:focusable="false"
+                android:elegantTextHeight="false"
+                android:onClick="Button_Correct" />
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:text="@string/button_pass"
+                android:id="@+id/Game_Pass"
+                android:layout_gravity="center_horizontal"
+                android:enabled="true"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="25sp"
+                android:focusable="false"
+                android:elegantTextHeight="false"
+                android:onClick="Button_Pass" />
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="fill_parent"
+                android:text="@string/button_taboo"
+                android:id="@+id/Game_Boo"
+                android:layout_gravity="center_horizontal"
+                android:enabled="true"
+                android:textColor="@color/primary_text_default_material_dark"
+                android:textSize="25sp"
+                android:focusable="false"
+                android:elegantTextHeight="false"
+                android:onClick="Button_Buzz" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
