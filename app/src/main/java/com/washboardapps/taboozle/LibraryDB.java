@@ -38,7 +38,6 @@ public class LibraryDB extends SQLiteAssetHelper {
     public Card GetNextCard(){
 
         db = getReadableDatabase();
-        Card card = new Card();
 
         //The query gets one random row with called=0
         String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 0 ORDER BY RANDOM() LIMIT 1";
@@ -55,7 +54,7 @@ public class LibraryDB extends SQLiteAssetHelper {
         }
 
         //Insert data into card
-        card = new Card();
+        Card card = new Card();
         card.setKey(cursor.getInt(0));
         card.setTitle(cursor.getString(1));
         card.setWord1(cursor.getString(2));
@@ -83,6 +82,24 @@ public class LibraryDB extends SQLiteAssetHelper {
         db.execSQL("UPDATE " + TABLE_LIBRARY + " SET CORRECT = " + card.getCorrect() +" WHERE KEY = " + card.getKey());
         db.execSQL("UPDATE " + TABLE_LIBRARY + " SET SKIPPED = " + card.getSkipped() +" WHERE KEY = " + card.getKey());
         db.execSQL("UPDATE " + TABLE_LIBRARY + " SET BUZZED = " + card.getBuzzed() +" WHERE KEY = " + card.getKey());
+        db.close();
+    }
+
+    public void GetCycleCards(){
+        db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 2";
+        Cursor cursor = db.rawQuery(query, null);
+
+        while (cursor.moveToNext()){
+            Card card = new Card();
+            card.setKey(cursor.getInt(0));
+            card.setCycle(cursor.getInt(8));
+            card.setCalled(cursor.getInt(9));
+            card.setCorrect(cursor.getInt(10));
+            card.setSkipped(cursor.getInt(11));
+            card.setBuzzed(cursor.getInt(12));
+        }
+
         db.close();
     }
 }

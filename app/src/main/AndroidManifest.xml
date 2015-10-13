@@ -8,14 +8,17 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:screenOrientation="portrait">
+
         <activity
             android:name=".Screen_Main"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Screen_Play"
             android:label="@string/title_activity_play_game"
@@ -24,6 +27,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Screen_Main" />
         </activity>
+
         <activity
             android:name=".Screen_Teams"
             android:label="@string/title_activity_pre_game"
@@ -32,29 +36,51 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Screen_Main" />
         </activity>
+
+        <activity
+            android:name=".Screen_Rounds"
+            android:label="@string/title_activity_screen_rounds"
+            android:parentActivityName=".Screen_Teams" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Screen_Teams" />
+        </activity>
+
         <activity
             android:name=".Screen_Ready"
             android:label="@string/title_activity_screen_ready" >
         </activity>
+
         <activity
             android:name=".Screen_End"
             android:label="@string/title_activity_screen_end" >
         </activity>
-        <activity
-            android:name=".Screen_Rounds"
-            android:label="@string/title_activity_screen_rounds" >
-        </activity>
+
         <activity
             android:name=".Screen_Options"
-            android:label="@string/title_activity_screen_options" >
+            android:label="@string/title_activity_screen_options"
+            android:parentActivityName=".Screen_Main" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Screen_Main" />
         </activity>
+
         <activity
             android:name=".Screen_Cards"
-            android:label="@string/title_activity_screen_cards" >
+            android:label="@string/title_activity_screen_cards"
+            android:parentActivityName=".Screen_Main" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Screen_Main" />
         </activity>
+
         <activity
             android:name=".Screen_Help"
-            android:label="@string/title_activity_screen_help" >
+            android:label="@string/title_activity_screen_help"
+            android:parentActivityName=".Screen_Main" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Screen_Main" />
         </activity>
     </application>
 </manifest>

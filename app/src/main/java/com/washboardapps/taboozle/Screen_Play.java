@@ -78,20 +78,20 @@ public class Screen_Play extends Activity {
 
     private void LoadNextCard() {
 
-        Card temp;
-
+        //add the current card to the safety queue and update its db entry
         if (currentCard != null){
             currentCard.setCycle(2);
             currentCard.setCalled(currentCard.getCalled() + 1);
             _Taboo.SafetyQueue.add(currentCard);
             _Taboo.Library.UpdateCard(currentCard);
+        }
 
-            if (_Taboo.SafetyQueue.size() > _Taboo.QueueSize){
-                temp = _Taboo.SafetyQueue.element();
-                temp.setCycle(1);
-                _Taboo.SafetyQueue.remove();
-                _Taboo.Library.UpdateCard(temp);
-            }
+        //remove elements from the safety queue that exceed the size limit
+        while (_Taboo.SafetyQueue.size() > _Taboo.QueueSize){
+            Card temp = _Taboo.SafetyQueue.element();
+            temp.setCycle(1);
+            _Taboo.SafetyQueue.remove();
+            _Taboo.Library.UpdateCard(temp);
         }
         currentCard = _Taboo.Library.GetNextCard();
         UpdateScreen();
