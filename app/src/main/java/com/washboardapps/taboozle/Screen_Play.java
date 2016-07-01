@@ -78,21 +78,26 @@ public class Screen_Play extends Activity {
 
     private void LoadNextCard() {
 
+        long startTime = System.currentTimeMillis();
+
         //add the current card to the safety queue and update its db entry
         if (currentCard != null){
             currentCard.setCycle(2);
             currentCard.setCalled(currentCard.getCalled() + 1);
-            _Taboo.SafetyQueue.add(currentCard);
+            _Taboo.SafetyQueue.add(currentCard.getKey());
             _Taboo.Library.UpdateCard(currentCard);
         }
 
         //remove elements from the safety queue that exceed the size limit
         while (_Taboo.SafetyQueue.size() > _Taboo.QueueSize){
-            Card temp = _Taboo.SafetyQueue.element();
-            temp.setCycle(1);
             _Taboo.SafetyQueue.remove();
-            _Taboo.Library.UpdateCard(temp);
+            _Taboo.Library.UpdateCycleByID(_Taboo.SafetyQueue.element(), 1);
         }
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("LoadNextCard: " + elapsedTime);
+
         currentCard = _Taboo.Library.GetNextCard();
         UpdateScreen();
     }
@@ -101,6 +106,8 @@ public class Screen_Play extends Activity {
         Updates the text on the screen to match the current card
      */
     private void UpdateScreen() {
+
+        long startTime = System.currentTimeMillis();
 
         //Updates card elements
         TextView title = (TextView) findViewById(R.id.Word_Title);
@@ -130,6 +137,10 @@ public class Screen_Play extends Activity {
         } else {
             getWindow().getDecorView().setBackgroundColor(Color.YELLOW);
         }
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("UpdateScreen: " + elapsedTime);
     }
 
     private void UpdateTimer() {

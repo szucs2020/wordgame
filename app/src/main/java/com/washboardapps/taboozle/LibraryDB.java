@@ -33,24 +33,26 @@ public class LibraryDB extends SQLiteAssetHelper {
     }
 
     /*
-        GetNextCard grabs a random card from the database that has called = 0
+        GetNextCard grabs a random card from the database that has cycle = 0
      */
     public Card GetNextCard(){
 
+        long startTime = System.currentTimeMillis();
+
         db = getReadableDatabase();
 
-        //The query gets one random row with called=0
+        //The query gets one random row with cycle=0
         String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 0 ORDER BY RANDOM() LIMIT 1";
         Cursor cursor = db.rawQuery(query, null);
 
         //the cursor is empty, so there are no items left that have not been called
         if (!cursor.moveToFirst()){
-            System.out.println("CURSOR IS EMPTY");
+            //System.out.println("CURSOR IS EMPTY");
             db.execSQL("UPDATE " + TABLE_LIBRARY + " SET CYCLE = 0 WHERE CYCLE = 1");
             query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 0 ORDER BY RANDOM() LIMIT 1";
             cursor = db.rawQuery(query, null);
         } else {
-            System.out.println("CURSOR IS NOT EMPTY");
+            //System.out.println("CURSOR IS NOT EMPTY");
         }
 
         //Insert data into card
@@ -72,17 +74,43 @@ public class LibraryDB extends SQLiteAssetHelper {
         card.setFlag(cursor.getInt(14));
 
         db.close();
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("GetNextCard: " + elapsedTime);
+
         return card;
     }
 
     public void UpdateCard(Card card){
+        long startTime = System.currentTimeMillis();
+
         db = getWritableDatabase();
-        db.execSQL("UPDATE " + TABLE_LIBRARY + " SET CYCLE = " + card.getCycle() +" WHERE KEY = " + card.getKey());
-        db.execSQL("UPDATE " + TABLE_LIBRARY + " SET CALLED = " + card.getCalled() +" WHERE KEY = " + card.getKey());
-        db.execSQL("UPDATE " + TABLE_LIBRARY + " SET CORRECT = " + card.getCorrect() +" WHERE KEY = " + card.getKey());
-        db.execSQL("UPDATE " + TABLE_LIBRARY + " SET SKIPPED = " + card.getSkipped() +" WHERE KEY = " + card.getKey());
-        db.execSQL("UPDATE " + TABLE_LIBRARY + " SET BUZZED = " + card.getBuzzed() +" WHERE KEY = " + card.getKey());
+        db.execSQL("UPDATE " + TABLE_LIBRARY
+                + " SET CYCLE = " + card.getCycle()
+                + ", CALLED = " + card.getCalled()
+                + ", CORRECT = " + card.getCorrect()
+                + ", SKIPPED = " + card.getSkipped()
+                + ", BUZZED = " + card.getBuzzed()
+                + " WHERE KEY = " + card.getKey());
         db.close();
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("UpdateCard: " + elapsedTime);
+    }
+
+    public void UpdateCycleByID(int ID, int cycle){
+        long startTime = System.currentTimeMillis();
+
+        db = getWritableDatabase();
+        db.execSQL("UPDATE " + TABLE_LIBRARY
+                + " SET CYCLE = " + cycle + " WHERE KEY = " + ID);
+        db.close();
+
+        long stopTime = System.currentTimeMillis();
+        long elapsedTime = stopTime - startTime;
+        System.out.println("UpdateCycleByID: " + elapsedTime);
     }
 
     public void GetCycleCards(){
@@ -91,15 +119,8 @@ public class LibraryDB extends SQLiteAssetHelper {
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()){
-            Card card = new Card();
-            card.setKey(cursor.getInt(0));
-            card.setCycle(cursor.getInt(8));
-            card.setCalled(cursor.getInt(9));
-            card.setCorrect(cursor.getInt(10));
-            card.setSkipped(cursor.getInt(11));
-            card.setBuzzed(cursor.getInt(12));
+            _Taboo.SafetyQueue.add(cursor.getInt(0));
         }
-
         db.close();
     }
 }

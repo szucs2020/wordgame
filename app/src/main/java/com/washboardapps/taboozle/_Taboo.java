@@ -13,7 +13,7 @@ public class _Taboo extends Application {
 
     public static Context GlobalContext;
     public static LibraryDB Library;
-    public static LinkedList<Card> SafetyQueue;
+    public static LinkedList<Integer> SafetyQueue;
     public static ArrayList<Team> Teams;
     public static int CurrentTeam;
     public static int NumRounds;
