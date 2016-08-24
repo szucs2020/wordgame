@@ -2,8 +2,10 @@ package com.washboardapps.taboozle;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
+
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 /**
@@ -52,7 +54,7 @@ public class LibraryDB extends SQLiteAssetHelper {
             query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 0 ORDER BY RANDOM() LIMIT 1";
             cursor = db.rawQuery(query, null);
         } else {
-            //System.out.println("CURSOR IS NOT EMPTY");
+            //System.out.println("CURSOR IS NOT EMPTY");R
         }
 
         //Insert data into card
@@ -122,5 +124,65 @@ public class LibraryDB extends SQLiteAssetHelper {
             _Taboo.SafetyQueue.add(cursor.getInt(0));
         }
         db.close();
+    }
+
+    //attempt to upload usage data to the MySQL database
+    public boolean UpdateUsageFields(){
+
+        AsyncUpdateUsageFields runner = new AsyncUpdateUsageFields();
+        runner.execute("");
+
+        return true;
+    }
+}
+
+class AsyncUpdateUsageFields extends AsyncTask<String, String, String> {
+
+    private String resp;
+
+    @Override
+    protected String doInBackground(String... params) {
+//        publishProgress("Sleeping..."); // Calls onProgressUpdate()
+        try {
+            resp = Boolean.toString(MySQLConnector.query("select * from Library where ID=0"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp = e.getMessage();
+        }
+        return resp;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+     */
+    @Override
+    protected void onPostExecute(String result) {
+        // execution of result of Long time consuming operation
+//        finalResult.setText(result);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.os.AsyncTask#onPreExecute()
+     */
+    @Override
+    protected void onPreExecute() {
+        // Things to be done before execution of long running operation. For
+        // example showing ProgessDialog
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+     */
+    @Override
+    protected void onProgressUpdate(String... text) {
+//        finalResult.setText(text[0]);
+        // Things to be done while execution of long running operation is in
+        // progress. For example updating ProgessDialog
     }
 }

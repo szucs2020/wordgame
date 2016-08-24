@@ -55,6 +55,11 @@ public class Screen_Main extends Activity {
 
     //Starts game activity
     public void Start_Pregame(View view) {
+
+        //test
+        System.out.println("Updating usage fields");
+        _Taboo.Library.UpdateUsageFields();
+
         Intent i = new Intent(this, Screen_Teams.class);
         startActivity(i);
     }

@@ -22,6 +22,11 @@ public class Screen_End extends Activity {
         i = getIntent();
         winText = i.getStringExtra("winTitle");
         UpdateScreen();
+
+        //update the card database usage fields and reset the local usage fields on success
+        //display a loading circle while this is happening
+        //alternatively, let the user use the app while it uploads in the background
+
     }
 
     //Prevent user from quitting game with back button without confirming first
