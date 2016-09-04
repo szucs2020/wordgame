@@ -4,34 +4,131 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
-import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Created by Christian on 29/09/2015.
  */
-public class LibraryDB extends SQLiteAssetHelper {
+public class LibraryDB extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "library.db";
     private static final int DATABASE_VERSION = 1;
-    private static SQLiteDatabase db;
 
-    private static String TABLE_LIBRARY = "library";
+    private static final String TABLE_LIBRARY = "Library";
+    private static final String TABLE_PACKS = "Packs";
+
+    private static SQLiteDatabase db;
 
     public LibraryDB(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        setForcedUpgrade();
 
-        //Check if the database is empty, and set the safety queue size
-        db = getReadableDatabase();
-        long numEntries = DatabaseUtils.queryNumEntries(db, TABLE_LIBRARY);
-        _Taboo.QueueSize = (int)Math.round(numEntries * _Taboo.QueueMultiplier);
-        if (numEntries <= 0){
-            System.err.println("DATABASE IS EMPTY: ABORTING...");
-            System.exit(0);
+        //force onCreate to be called
+        db = getWritableDatabase();
+        db.close();
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+
+        db.execSQL(
+            "create table " + TABLE_LIBRARY + " " +
+            "(ID integer primary key," +
+                    "Title text," +
+                    "Word1 text," +
+                    "Word2 text," +
+                    "Word3 text," +
+                    "Word4 text," +
+                    "Word5 text," +
+                    "Category integer," +
+                    "Cycle integer," +
+                    "Called integer," +
+                    "Correct integer," +
+                    "Skipped integer," +
+                    "Buzzed integer," +
+                    "Difficulty real," +
+                    "Flags integer)"
+        );
+        db.execSQL("create table " + TABLE_PACKS + " (PackID integer primary key, PackName text, PackSize integer, Enabled integer)");
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
+        database.execSQL("DROP TABLE IF EXISTS " + TABLE_LIBRARY);
+        database.execSQL("DROP TABLE IF EXISTS " + TABLE_PACKS);
+        onCreate(database);
+    }
+
+    public boolean UpdateLocalDatabases(){
+
+        long numEntries = 0;
+
+        db = getWritableDatabase();
+        try {
+            //truncate local database
+            db.execSQL("DELETE FROM " + TABLE_LIBRARY);
+            db.execSQL("DELETE FROM " + TABLE_PACKS);
+
+            JSONArray ja = MySQLConnector.query("select * from Library");
+
+            for (int i = 0; i < ja.length(); i++) {
+                JSONObject jobj = ja.getJSONObject(i);
+                SQLiteStatement stmt = db.compileStatement("INSERT INTO " + TABLE_LIBRARY + " (ID, Title, Word1, Word2, Word3, Word4, Word5, Category, Cycle, Called, Correct, Skipped, Buzzed, Difficulty, Flags) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                stmt.bindLong(1, jobj.getInt("ID"));
+                stmt.bindString(2, jobj.getString("Title"));
+                stmt.bindString(3, jobj.getString("Word1"));
+                stmt.bindString(4, jobj.getString("Word2"));
+                stmt.bindString(5, jobj.getString("Word3"));
+                stmt.bindString(6, jobj.getString("Word4"));
+                stmt.bindString(7, jobj.getString("Word5"));
+                stmt.bindLong(8, jobj.getInt("Category"));
+                stmt.bindLong(9, 0);
+                stmt.bindLong(10, jobj.getInt("Called"));
+                stmt.bindLong(11, jobj.getInt("Correct"));
+                stmt.bindLong(12, jobj.getInt("Skipped"));
+                stmt.bindLong(13, jobj.getInt("Buzzed"));
+                stmt.bindDouble(14, jobj.getDouble("Difficulty"));
+                stmt.bindLong(15, jobj.getInt("Flags"));
+                stmt.executeInsert();
+                stmt.close();
+            }
+
+            JSONArray cats = MySQLConnector.query("select * from " + TABLE_PACKS);
+            for (int i = 0; i < cats.length(); i++) {
+                JSONObject jobj = cats.getJSONObject(i);
+                SQLiteStatement catstmt = db.compileStatement("INSERT INTO " + TABLE_PACKS + " (PackID, PackName, PackSize, Enabled) VALUES (?,?,?,?)");
+                catstmt.bindLong(1, jobj.getInt("PackID"));
+                catstmt.bindString(2, jobj.getString("PackName"));
+                catstmt.bindLong(3, jobj.getInt("PackSize"));
+
+                //set the standard pack as enabled by default
+                if (jobj.getInt("PackID") == 1){
+                    catstmt.bindLong(4, 1);
+                } else {
+                    catstmt.bindLong(4, 0);
+                }
+                catstmt.executeInsert();
+                catstmt.close();
+            }
+
+            //Set the safety queue size
+            numEntries = DatabaseUtils.queryNumEntries(db, TABLE_LIBRARY);
+            _Taboo.QueueSize = (int)Math.round(numEntries * _Taboo.QueueMultiplier);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
         db.close();
+
+        if (numEntries > 0){
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /*
@@ -43,23 +140,31 @@ public class LibraryDB extends SQLiteAssetHelper {
 
         db = getReadableDatabase();
 
+        //make the SQL acceptable string
+        String packString = "(";
+        Cursor packs = _Taboo.Library.RawQuery("select * from Packs where Enabled=1");
+
+        while (packs.moveToNext()){
+            packString = packString + packs.getString(packs.getColumnIndex("PackID")) + ",";
+        }
+        packString = packString.substring(0, packString.length() - 1);
+        packString = packString + ")";
+
+        System.out.println(packString);
+
         //The query gets one random row with cycle=0
-        String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 0 ORDER BY RANDOM() LIMIT 1";
+        String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE Cycle = 0 and Category in " + packString + " ORDER BY RANDOM() LIMIT 1";
         Cursor cursor = db.rawQuery(query, null);
 
         //the cursor is empty, so there are no items left that have not been called
         if (!cursor.moveToFirst()){
-            //System.out.println("CURSOR IS EMPTY");
-            db.execSQL("UPDATE " + TABLE_LIBRARY + " SET CYCLE = 0 WHERE CYCLE = 1");
-            query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 0 ORDER BY RANDOM() LIMIT 1";
+            db.execSQL("UPDATE " + TABLE_LIBRARY + " SET Cycle = 0 and Category in " + packString + " WHERE Cycle = 1");
             cursor = db.rawQuery(query, null);
-        } else {
-            //System.out.println("CURSOR IS NOT EMPTY");R
         }
 
         //Insert data into card
         Card card = new Card();
-        card.setKey(cursor.getInt(0));
+        card.setID(cursor.getInt(0));
         card.setTitle(cursor.getString(1));
         card.setWord1(cursor.getString(2));
         card.setWord2(cursor.getString(3));
@@ -89,12 +194,12 @@ public class LibraryDB extends SQLiteAssetHelper {
 
         db = getWritableDatabase();
         db.execSQL("UPDATE " + TABLE_LIBRARY
-                + " SET CYCLE = " + card.getCycle()
-                + ", CALLED = " + card.getCalled()
-                + ", CORRECT = " + card.getCorrect()
-                + ", SKIPPED = " + card.getSkipped()
-                + ", BUZZED = " + card.getBuzzed()
-                + " WHERE KEY = " + card.getKey());
+                + " SET Cycle = " + card.getCycle()
+                + ", Called = " + card.getCalled()
+                + ", Correct = " + card.getCorrect()
+                + ", Skipped = " + card.getSkipped()
+                + ", Buzzed = " + card.getBuzzed()
+                + " WHERE ID = " + card.getID());
         db.close();
 
         long stopTime = System.currentTimeMillis();
@@ -107,7 +212,7 @@ public class LibraryDB extends SQLiteAssetHelper {
 
         db = getWritableDatabase();
         db.execSQL("UPDATE " + TABLE_LIBRARY
-                + " SET CYCLE = " + cycle + " WHERE KEY = " + ID);
+                + " SET Cycle = " + cycle + " WHERE ID = " + ID);
         db.close();
 
         long stopTime = System.currentTimeMillis();
@@ -117,7 +222,7 @@ public class LibraryDB extends SQLiteAssetHelper {
 
     public void GetCycleCards(){
         db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE CYCLE = 2";
+        String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE Cycle = 2";
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()){
@@ -128,61 +233,63 @@ public class LibraryDB extends SQLiteAssetHelper {
 
     //attempt to upload usage data to the MySQL database
     public boolean UpdateUsageFields(){
+        new Thread(new Runnable() {
+            public void run() {
 
-        AsyncUpdateUsageFields runner = new AsyncUpdateUsageFields();
-        runner.execute("");
+                db = getWritableDatabase();
+                String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE Called <> 0";
+                Cursor cursor = db.rawQuery(query, null);
 
+                while (cursor.moveToNext()){
+
+                    String q = "update " + TABLE_LIBRARY + " set Called=Called + " + cursor.getInt(9)
+                            + ",Correct=Correct + " + cursor.getInt(10)
+                            + ",Skipped=Skipped + " + cursor.getInt(11)
+                            + ",Buzzed=Buzzed + " + cursor.getInt(12)
+                            + " where ID=" + cursor.getInt(0) + ";";
+
+                    if (MySQLConnector.nonquery(q) > 0){
+                        db.execSQL("UPDATE " + TABLE_LIBRARY
+                                + " SET Called=0, Correct=0, Skipped=0, Buzzed=0 WHERE ID = " + cursor.getInt(0));
+                    } else {
+                        System.err.println("There was a problem uploading the statistics to the server.");
+                    }
+                }
+                db.close();
+            }
+        }).start();
         return true;
     }
-}
 
-class AsyncUpdateUsageFields extends AsyncTask<String, String, String> {
+    public Cursor RawQuery(String query){
 
-    private String resp;
+        db = getReadableDatabase();
+        return db.rawQuery(query, null);
+    }
 
-    @Override
-    protected String doInBackground(String... params) {
-//        publishProgress("Sleeping..."); // Calls onProgressUpdate()
-        try {
-            resp = Boolean.toString(MySQLConnector.query("select * from Library where ID=0"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            resp = e.getMessage();
+    public void SetEnabled(int PackID, boolean enabled){
+
+        int bool;
+        if(enabled){
+            bool = 1;
+        } else {
+            bool = 0;
         }
-        return resp;
+
+        String q = "update " + TABLE_PACKS + " set Enabled=" + bool + " where PackID=" + PackID;
+        db = getWritableDatabase();
+        db.execSQL(q);
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
-     */
-    @Override
-    protected void onPostExecute(String result) {
-        // execution of result of Long time consuming operation
-//        finalResult.setText(result);
-    }
+    public boolean GetEnabled(int PackID){
+        Cursor cursor = RawQuery("select Enabled from " + TABLE_PACKS + " where PackID=" + PackID);
+        boolean enabled = false;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.os.AsyncTask#onPreExecute()
-     */
-    @Override
-    protected void onPreExecute() {
-        // Things to be done before execution of long running operation. For
-        // example showing ProgessDialog
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see android.os.AsyncTask#onProgressUpdate(Progress[])
-     */
-    @Override
-    protected void onProgressUpdate(String... text) {
-//        finalResult.setText(text[0]);
-        // Things to be done while execution of long running operation is in
-        // progress. For example updating ProgessDialog
+        while (cursor.moveToNext()){
+            if(cursor.getInt(cursor.getColumnIndex("Enabled")) == 1){
+                enabled = true;
+            }
+        }
+        return enabled;
     }
 }

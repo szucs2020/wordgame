@@ -32,5 +32,12 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:paddingTop="50dp" />
 
+        <LinearLayout
+            android:id="@+id/CardLinearLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+        />
+
     </LinearLayout>
 </RelativeLayout>

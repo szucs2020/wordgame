@@ -24,8 +24,7 @@ public class Screen_End extends Activity {
         UpdateScreen();
 
         //update the card database usage fields and reset the local usage fields on success
-        //display a loading circle while this is happening
-        //alternatively, let the user use the app while it uploads in the background
+        _Taboo.Library.UpdateUsageFields();
 
     }
 

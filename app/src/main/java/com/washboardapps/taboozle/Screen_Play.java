@@ -17,7 +17,7 @@ public class Screen_Play extends Activity {
     final android.os.Handler handler = new android.os.Handler();
     private Timer timer;
     private Card currentCard;
-    private int timeVal = 60 + 1;
+    private int timeVal = 5 + 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class Screen_Play extends Activity {
         if (currentCard != null){
             currentCard.setCycle(2);
             currentCard.setCalled(currentCard.getCalled() + 1);
-            _Taboo.SafetyQueue.add(currentCard.getKey());
+            _Taboo.SafetyQueue.add(currentCard.getID());
             _Taboo.Library.UpdateCard(currentCard);
         }
 

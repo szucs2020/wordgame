@@ -5,7 +5,7 @@ package com.washboardapps.taboozle;
  */
 public class Card {
 
-    private int key;
+    private int ID;
     private String title;
     private String word1;
     private String word2;
@@ -22,8 +22,8 @@ public class Card {
     private int flag;
 
     //Getters
-    public int getKey() {
-        return key;
+    public int getID() {
+        return ID;
     }
     public String getTitle() {
         return title;
@@ -69,8 +69,8 @@ public class Card {
     }
 
     //Setters
-    public void setKey(int key) {
-        this.key = key;
+    public void setID(int ID) {
+        this.ID = ID;
     }
     public void setTitle(String title) {
         this.title = title;

@@ -78,12 +78,22 @@
         </activity>
 
         <activity
-            android:name=".Screen_Help"
-            android:label="@string/title_activity_screen_help"
-            android:parentActivityName=".Screen_Main" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".Screen_Main" />
-        </activity>
+        android:name=".Screen_Help"
+        android:label="@string/title_activity_screen_help"
+        android:parentActivityName=".Screen_Main" >
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".Screen_Main" />
+    </activity>
+
+    <activity
+        android:name=".Screen_UpdateCards"
+        android:label="@string/title_activity_screen_update_cards"
+        android:parentActivityName=".Screen_Main" >
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".Screen_Main" />
+    </activity>
+
     </application>
 </manifest>

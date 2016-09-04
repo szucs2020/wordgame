@@ -1,10 +1,11 @@
 package com.washboardapps.taboozle;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -20,12 +21,10 @@ public class Screen_Main extends Activity {
         //set global context
         _Taboo.GlobalContext = getApplicationContext();
 
-        //Initialize database and safety queue
+        //Initialize database and update it
         _Taboo.Library = new LibraryDB(this);
-        _Taboo.SafetyQueue = new LinkedList<>();
-
-        //fill the safety queue up with entries that shouldnt be cycled
-        _Taboo.Library.GetCycleCards();
+        UpdateCardsTask task = new UpdateCardsTask();
+        task.execute();
 
         //Initialize current team value
         _Taboo.CurrentTeam = 0;
@@ -55,11 +54,6 @@ public class Screen_Main extends Activity {
 
     //Starts game activity
     public void Start_Pregame(View view) {
-
-        //test
-        System.out.println("Updating usage fields");
-        _Taboo.Library.UpdateUsageFields();
-
         Intent i = new Intent(this, Screen_Teams.class);
         startActivity(i);
     }
@@ -80,5 +74,36 @@ public class Screen_Main extends Activity {
     public void Start_Help(View view) {
         Intent i = new Intent(this, Screen_Help.class);
         startActivity(i);
+    }
+
+    private class UpdateCardsTask extends AsyncTask<String, Void, Boolean> {
+
+        View mainLayout = (View)findViewById(R.id.MainLinearLayout);
+        View relativeLayout = (View)findViewById(R.id.relativelayout_progress);
+
+        @Override
+        protected void onPreExecute() {
+            mainLayout.setVisibility(View.GONE);
+            relativeLayout.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(final String... args) {
+
+            //update local database
+            return _Taboo.Library.UpdateLocalDatabases();
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            //go back to main menu
+            mainLayout.setVisibility(View.VISIBLE);
+            relativeLayout.setVisibility(View.GONE);
+
+            //fill the safety queue up with entries that shouldn't be cycled
+            _Taboo.SafetyQueue = new LinkedList<>();
+            _Taboo.Library.GetCycleCards();
+        }
     }
 }
