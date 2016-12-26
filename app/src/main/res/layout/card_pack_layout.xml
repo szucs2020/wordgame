@@ -12,23 +12,42 @@
         android:layout_centerVertical="true"
         android:scaleType="centerInside" />
 
-    <CheckBox
-        android:id="@+id/pack_list_detail"
+    <RelativeLayout
+        android:id="@+id/pack_list_overlap_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginStart="4dp"
-        android:layout_marginEnd="2dp"
-        android:maxLines="1"
-        android:paddingEnd="4dp" />
+        android:layout_marginEnd="2dp">
+
+        <CheckBox
+            android:id="@+id/pack_list_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:paddingEnd="4dp"
+        />
+
+        <Button
+            android:id="@+id/pack_list_buy_button"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:text="buy"
+            android:visibility="gone"
+        />
+
+    </RelativeLayout>
+
+
+
 
     <RelativeLayout
     android:id="@+id/pack_list_text_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"
-    android:layout_toStartOf="@id/pack_list_detail"
+    android:layout_toStartOf="@id/pack_list_overlap_layout"
     android:layout_toEndOf="@id/pack_list_thumbnail">
 
     <TextView

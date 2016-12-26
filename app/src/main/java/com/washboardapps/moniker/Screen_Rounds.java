@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -12,26 +12,26 @@ public class Screen_Rounds extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rounds);
-        _Taboo.NumRounds = 3;
+        _Moniker.NumRounds = 3;
         updateScreen();
     }
 
     public void Plus(View view){
-        if (_Taboo.NumRounds < 10){
-            _Taboo.NumRounds++;
+        if (_Moniker.NumRounds < 10){
+            _Moniker.NumRounds++;
             updateScreen();
         }
     }
 
     public void Minus(View view){
-        if (_Taboo.NumRounds > 1){
-            _Taboo.NumRounds--;
+        if (_Moniker.NumRounds > 1){
+            _Moniker.NumRounds--;
             updateScreen();
         }
     }
 
     public void StartGame(View view){
-        _Taboo.RoundsLeft = _Taboo.NumRounds * _Taboo.Teams.size() * 2;
+        _Moniker.RoundsLeft = _Moniker.NumRounds * _Moniker.Teams.size() * 2;
         Intent i = new Intent(this, Screen_Ready.class);
         startActivity(i);
     }
@@ -39,6 +39,6 @@ public class Screen_Rounds extends Activity {
     //updates points/rounds text box
     private void updateScreen(){
         TextView text = (TextView) findViewById(R.id.Rounds);
-        text.setText(String.valueOf(_Taboo.NumRounds));
+        text.setText(String.valueOf(_Moniker.NumRounds));
     }
 }

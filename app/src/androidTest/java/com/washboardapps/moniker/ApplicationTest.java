@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

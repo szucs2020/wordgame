@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteStatement;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by Christian on 29/09/2015.
@@ -50,7 +52,9 @@ public class LibraryDB extends SQLiteOpenHelper {
                     "Skipped integer," +
                     "Buzzed integer," +
                     "Difficulty real," +
-                    "Flags integer)"
+                    "Flags integer," +
+                    "TimeOut integer," +
+                    "AvgTime double)"
         );
         db.execSQL("create table " + TABLE_PACKS + " (PackID integer primary key, PackName text, PackSize integer, Enabled integer)");
     }
@@ -76,7 +80,7 @@ public class LibraryDB extends SQLiteOpenHelper {
 
             for (int i = 0; i < ja.length(); i++) {
                 JSONObject jobj = ja.getJSONObject(i);
-                SQLiteStatement stmt = db.compileStatement("INSERT INTO " + TABLE_LIBRARY + " (ID, Title, Word1, Word2, Word3, Word4, Word5, Category, Cycle, Called, Correct, Skipped, Buzzed, Difficulty, Flags) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                SQLiteStatement stmt = db.compileStatement("INSERT INTO " + TABLE_LIBRARY + " (ID, Title, Word1, Word2, Word3, Word4, Word5, Category, Cycle, Called, Correct, Skipped, Buzzed, Difficulty, Flags, TimeOut, AvgTime) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 stmt.bindLong(1, jobj.getInt("ID"));
                 stmt.bindString(2, jobj.getString("Title"));
                 stmt.bindString(3, jobj.getString("Word1"));
@@ -92,6 +96,8 @@ public class LibraryDB extends SQLiteOpenHelper {
                 stmt.bindLong(13, jobj.getInt("Buzzed"));
                 stmt.bindDouble(14, jobj.getDouble("Difficulty"));
                 stmt.bindLong(15, jobj.getInt("Flags"));
+                stmt.bindLong(16, jobj.getInt("TimeOut"));
+                stmt.bindDouble(17, jobj.getDouble("AvgTime"));
                 stmt.executeInsert();
                 stmt.close();
             }
@@ -116,7 +122,7 @@ public class LibraryDB extends SQLiteOpenHelper {
 
             //Set the safety queue size
             numEntries = DatabaseUtils.queryNumEntries(db, TABLE_LIBRARY);
-            _Taboo.QueueSize = (int)Math.round(numEntries * _Taboo.QueueMultiplier);
+            _Moniker.QueueSize = (int)Math.round(numEntries * _Moniker.QueueMultiplier);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -134,35 +140,32 @@ public class LibraryDB extends SQLiteOpenHelper {
     /*
         GetNextCard grabs a random card from the database that has cycle = 0
      */
-    public Card GetNextCard(){
-
-        long startTime = System.currentTimeMillis();
+    public Card GetNextCard(String packString, String difficultyString){
 
         db = getReadableDatabase();
 
-        //make the SQL acceptable string
-        String packString = "(";
-        Cursor packs = _Taboo.Library.RawQuery("select * from Packs where Enabled=1");
-
-        while (packs.moveToNext()){
-            packString = packString + packs.getString(packs.getColumnIndex("PackID")) + ",";
-        }
-        packString = packString.substring(0, packString.length() - 1);
-        packString = packString + ")";
-
-        System.out.println(packString);
-
         //The query gets one random row with cycle=0
-        String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE Cycle = 0 and Category in " + packString + " ORDER BY RANDOM() LIMIT 1";
+        String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE Cycle = 0 and Category in " + packString + difficultyString + " ORDER BY RANDOM() LIMIT 1";
         Cursor cursor = db.rawQuery(query, null);
 
         //the cursor is empty, so there are no items left that have not been called
         if (!cursor.moveToFirst()){
-            db.execSQL("UPDATE " + TABLE_LIBRARY + " SET Cycle = 0 and Category in " + packString + " WHERE Cycle = 1");
+            String upQuery = "UPDATE " + TABLE_LIBRARY + " SET Cycle = 0 where Category in " + packString + difficultyString + " and Cycle = 1";
+            db.execSQL(upQuery);
+            cursor = db.rawQuery(query, null);
+        }
+
+        //the cursor is still empty, presumably because the safety queue is too big..fix this later
+        if (!cursor.moveToFirst()){
+            System.out.println("SAFETY QUEUE BEING RESET. THIS SHOULD NOT HAPPEN WITH A REAL DECK");
+            String upQuery = "UPDATE " + TABLE_LIBRARY + " SET Cycle = 0  WHERE Cycle = 2";
+            _Moniker.SafetyQueue.clear();
+            db.execSQL(upQuery);
             cursor = db.rawQuery(query, null);
         }
 
         //Insert data into card
+        cursor.moveToFirst();
         Card card = new Card();
         card.setID(cursor.getInt(0));
         card.setTitle(cursor.getString(1));
@@ -179,18 +182,14 @@ public class LibraryDB extends SQLiteOpenHelper {
         card.setBuzzed(cursor.getInt(12));
         card.setDifficulty(cursor.getFloat(13));
         card.setFlag(cursor.getInt(14));
-
+        card.setTimeOut(cursor.getInt(15));
+        card.setAvgTime(cursor.getDouble(16));
         db.close();
-
-        long stopTime = System.currentTimeMillis();
-        long elapsedTime = stopTime - startTime;
-        System.out.println("GetNextCard: " + elapsedTime);
 
         return card;
     }
 
     public void UpdateCard(Card card){
-        long startTime = System.currentTimeMillis();
 
         db = getWritableDatabase();
         db.execSQL("UPDATE " + TABLE_LIBRARY
@@ -199,25 +198,17 @@ public class LibraryDB extends SQLiteOpenHelper {
                 + ", Correct = " + card.getCorrect()
                 + ", Skipped = " + card.getSkipped()
                 + ", Buzzed = " + card.getBuzzed()
+                + ", TimeOut = " + card.getTimeOut()
+                + ", AvgTime = " + card.getAvgTime()
                 + " WHERE ID = " + card.getID());
         db.close();
-
-        long stopTime = System.currentTimeMillis();
-        long elapsedTime = stopTime - startTime;
-        System.out.println("UpdateCard: " + elapsedTime);
     }
 
     public void UpdateCycleByID(int ID, int cycle){
-        long startTime = System.currentTimeMillis();
-
         db = getWritableDatabase();
         db.execSQL("UPDATE " + TABLE_LIBRARY
                 + " SET Cycle = " + cycle + " WHERE ID = " + ID);
         db.close();
-
-        long stopTime = System.currentTimeMillis();
-        long elapsedTime = stopTime - startTime;
-        System.out.println("UpdateCycleByID: " + elapsedTime);
     }
 
     public void GetCycleCards(){
@@ -226,7 +217,7 @@ public class LibraryDB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery(query, null);
 
         while (cursor.moveToNext()){
-            _Taboo.SafetyQueue.add(cursor.getInt(0));
+            _Moniker.SafetyQueue.add(cursor.getInt(0));
         }
         db.close();
     }
@@ -242,15 +233,19 @@ public class LibraryDB extends SQLiteOpenHelper {
 
                 while (cursor.moveToNext()){
 
-                    String q = "update " + TABLE_LIBRARY + " set Called=Called + " + cursor.getInt(9)
+                    String q = "update " + TABLE_LIBRARY + " set "
+                            + "AvgTime=(AvgTime*(1.0-(" + (cursor.getInt(9) - cursor.getInt(15)) + " / (" + (cursor.getInt(9) - cursor.getInt(15)) + " + Called - TimeOut)))) + " + "(" + cursor.getDouble(16) + "*(" + (cursor.getInt(9) - cursor.getInt(15)) + " / (" + (cursor.getInt(9) - cursor.getInt(15)) + " + Called - TimeOut)))"
+                            + ",Called=Called + " + cursor.getInt(9)
                             + ",Correct=Correct + " + cursor.getInt(10)
                             + ",Skipped=Skipped + " + cursor.getInt(11)
                             + ",Buzzed=Buzzed + " + cursor.getInt(12)
+                            + ",TimeOut=TimeOut + " + cursor.getInt(15)
                             + " where ID=" + cursor.getInt(0) + ";";
 
+                    System.out.println(q);
                     if (MySQLConnector.nonquery(q) > 0){
                         db.execSQL("UPDATE " + TABLE_LIBRARY
-                                + " SET Called=0, Correct=0, Skipped=0, Buzzed=0 WHERE ID = " + cursor.getInt(0));
+                                + " SET Called=0, Correct=0, Skipped=0, Buzzed=0, TimeOut=0, AvgTime=0 WHERE ID = " + cursor.getInt(0));
                     } else {
                         System.err.println("There was a problem uploading the statistics to the server.");
                     }
@@ -262,9 +257,29 @@ public class LibraryDB extends SQLiteOpenHelper {
     }
 
     public Cursor RawQuery(String query){
-
         db = getReadableDatabase();
         return db.rawQuery(query, null);
+    }
+
+    //downloads the packs from the webservice and adds them to an arraylist
+    public static ArrayList<CardPack> getCardPacks(){
+
+        ArrayList<CardPack> cardPacks = new ArrayList<CardPack>();
+        Cursor cursor = _Moniker.Library.RawQuery("select * from Packs");
+        int i = 1;
+
+        while (cursor.moveToNext()){
+
+            CardPack cp = new CardPack();
+            cp.title = cursor.getString(cursor.getColumnIndex("PackName"));
+            cp.packSize = cursor.getString(cursor.getColumnIndex("PackSize"));
+            cp.enabled = _Moniker.Library.GetEnabled(i);
+            cp.packID = i;
+            cardPacks.add(cp);
+
+            i++;
+        }
+        return cardPacks;
     }
 
     public void SetEnabled(int PackID, boolean enabled){
@@ -279,6 +294,7 @@ public class LibraryDB extends SQLiteOpenHelper {
         String q = "update " + TABLE_PACKS + " set Enabled=" + bool + " where PackID=" + PackID;
         db = getWritableDatabase();
         db.execSQL(q);
+        db.close();
     }
 
     public boolean GetEnabled(int PackID){

@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 /**
  * Created by Christian on 15/02/2015.
@@ -20,6 +20,8 @@ public class Card {
     private int buzzed;
     private float difficulty;
     private int flag;
+    private int timeOut;
+    private double avgTime;
 
     //Getters
     public int getID() {
@@ -66,6 +68,12 @@ public class Card {
     }
     public int getFlag() {
         return flag;
+    }
+    public int getTimeOut() {
+        return timeOut;
+    }
+    public double getAvgTime() {
+        return avgTime;
     }
 
     //Setters
@@ -114,4 +122,11 @@ public class Card {
     public void setFlag(int flag) {
         this.flag = flag;
     }
+    public void setTimeOut(int timeOut) {
+        this.timeOut = timeOut;
+    }
+    public void setAvgTime(double avgTime) {
+        this.avgTime = avgTime;
+    }
+
 }

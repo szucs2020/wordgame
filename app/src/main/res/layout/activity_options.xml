@@ -31,5 +31,54 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:paddingTop="50dp" />
 
+        <RelativeLayout
+            android:id="@+id/pack_list_overlap_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true">
+
+            <TextView
+                android:id="@+id/rangebar_center_label"
+                android:text="Card Difficulty"
+                android:textSize="28dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/rangebar_left_label"
+                    android:text="0"
+                    android:textSize="28dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left" />
+
+                <TextView
+                    android:id="@+id/rangebar_right_label"
+                    android:text="10"
+                    android:textSize="28dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right" />
+
+            </LinearLayout>
+        </RelativeLayout>
+
+        <com.edmodo.rangebar.RangeBar
+            xmlns:custom="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rangebar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:tickCount="11"
+            custom:tickHeight="8dp" />
+
     </LinearLayout>
 </RelativeLayout>

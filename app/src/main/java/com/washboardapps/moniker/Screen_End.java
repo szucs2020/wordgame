@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,7 +24,7 @@ public class Screen_End extends Activity {
         UpdateScreen();
 
         //update the card database usage fields and reset the local usage fields on success
-        _Taboo.Library.UpdateUsageFields();
+        _Moniker.Library.UpdateUsageFields();
 
     }
 
@@ -54,8 +54,8 @@ public class Screen_End extends Activity {
 
     public void PlayAgain(View view){
         //reset rounds and scores and go again
-        _Taboo.RoundsLeft = _Taboo.NumRounds * _Taboo.Teams.size() * 2;
-        _Taboo.CurrentTeam = 0;
+        _Moniker.RoundsLeft = _Moniker.NumRounds * _Moniker.Teams.size() * 2;
+        _Moniker.CurrentTeam = 0;
         Intent i = new Intent(Screen_End.this, Screen_Ready.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);

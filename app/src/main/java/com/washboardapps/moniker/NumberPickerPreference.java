@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 import android.content.Context;
 import android.content.res.TypedArray;

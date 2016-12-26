@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -20,15 +19,15 @@ public class Screen_Main extends Activity {
         setContentView(R.layout.activity_main);
 
         //set global context
-        _Taboo.GlobalContext = getApplicationContext();
+        _Moniker.GlobalContext = getApplicationContext();
 
         //Initialize database and update it
-        _Taboo.Library = new LibraryDB(this);
+        _Moniker.Library = new LibraryDB(this);
         UpdateCardsTask task = new UpdateCardsTask();
         task.execute();
 
         //Initialize current team value
-        _Taboo.CurrentTeam = 0;
+        _Moniker.CurrentTeam = 0;
     }
 
     //Prevent user from quitting game with back button without confirming first
@@ -92,7 +91,7 @@ public class Screen_Main extends Activity {
         protected Boolean doInBackground(final String... args) {
 
             //update local database
-            return _Taboo.Library.UpdateLocalDatabases();
+            return _Moniker.Library.UpdateLocalDatabases();
         }
 
         @Override
@@ -103,8 +102,8 @@ public class Screen_Main extends Activity {
             relativeLayout.setVisibility(View.GONE);
 
             //fill the safety queue up with entries that shouldn't be cycled
-            _Taboo.SafetyQueue = new LinkedList<>();
-            _Taboo.Library.GetCycleCards();
+            _Moniker.SafetyQueue = new LinkedList<>();
+            _Moniker.Library.GetCycleCards();
         }
     }
 }

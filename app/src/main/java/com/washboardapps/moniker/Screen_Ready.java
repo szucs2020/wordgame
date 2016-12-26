@@ -1,4 +1,4 @@
-package com.washboardapps.taboozle;
+package com.washboardapps.moniker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -62,13 +62,13 @@ public class Screen_Ready extends Activity {
         TextView title = (TextView) findViewById(R.id.Team_Start);
 
         //Set title and background colour by current team playing
-        if (_Taboo.CurrentTeam == 0){
+        if (_Moniker.CurrentTeam == 0){
             title.setText("Blue Team Start!");
             getWindow().getDecorView().setBackgroundColor(Color.BLUE);
-        } else if (_Taboo.CurrentTeam == 1){
+        } else if (_Moniker.CurrentTeam == 1){
             title.setText("Red Team Start!");
             getWindow().getDecorView().setBackgroundColor(Color.RED);
-        } else if (_Taboo.CurrentTeam == 2){
+        } else if (_Moniker.CurrentTeam == 2){
             title.setText("Green Team Start!");
             getWindow().getDecorView().setBackgroundColor(Color.GREEN);
         } else {
