@@ -38,6 +38,7 @@ public class MySQLConnector {
         try {
             HttpClient httpclient = new DefaultHttpClient();
             HttpPost httppost = new HttpPost("http://christianszucs.com/php/mysqlWebService.php");
+//            HttpPost httppost = new HttpPost("http://christianszucs.com/php/mysqlWebServiceTest.php");
             httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
             HttpResponse response = httpclient.execute(httppost);
             HttpEntity entity = response.getEntity();

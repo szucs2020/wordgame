@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import com.edmodo.rangebar.RangeBar;
 
@@ -47,7 +49,37 @@ public class Screen_Options extends Activity {
                 }
             }
         });
+
+        //Timer counter settings
+        _Moniker.RoundTimer = sp.getInt(getString(R.string.sp_options_round_timer), 60);
+        updateScreen();
     }
 
+    public void Timer_Plus(View view){
+        if (_Moniker.RoundTimer < 120){
+            _Moniker.RoundTimer += 10;
+            SaveSharedPreferences();
+            updateScreen();
+        }
+    }
 
+    public void Timer_Minus(View view){
+        if (_Moniker.RoundTimer > 10){
+            _Moniker.RoundTimer -= 10;
+            SaveSharedPreferences();
+            updateScreen();
+        }
+    }
+
+    private void SaveSharedPreferences(){
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt(getString(R.string.sp_options_round_timer), _Moniker.RoundTimer);
+        editor.commit();
+    }
+
+    //updates view
+    private void updateScreen(){
+        TextView timerVal = (TextView) findViewById(R.id.Timer_Value);
+        timerVal.setText(String.valueOf(_Moniker.RoundTimer));
+    }
 }

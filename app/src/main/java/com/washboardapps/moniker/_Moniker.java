@@ -17,6 +17,7 @@ public class _Moniker extends Application {
     public static ArrayList<Team> Teams;
     public static int CurrentTeam;
     public static int NumRounds;
+    public static int RoundTimer;
     public static int RoundsLeft;
     public static int QueueSize;
     public static final double QueueMultiplier = 0.1;

@@ -2,8 +2,10 @@ package com.washboardapps.moniker;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +13,9 @@ import android.view.View;
 import java.util.LinkedList;
 
 public class Screen_Main extends Activity {
+
+    private Context context;
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +30,11 @@ public class Screen_Main extends Activity {
         _Moniker.Library = new LibraryDB(this);
         UpdateCardsTask task = new UpdateCardsTask();
         task.execute();
+
+        //load some settings
+        context = this.getApplicationContext();
+        sp = context.getSharedPreferences("options", Context.MODE_PRIVATE);
+        _Moniker.RoundTimer = sp.getInt(getString(R.string.sp_options_round_timer), 60);
 
         //Initialize current team value
         _Moniker.CurrentTeam = 0;

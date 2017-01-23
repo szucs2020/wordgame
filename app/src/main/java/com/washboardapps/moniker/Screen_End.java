@@ -55,6 +55,7 @@ public class Screen_End extends Activity {
     public void PlayAgain(View view){
         //reset rounds and scores and go again
         _Moniker.RoundsLeft = _Moniker.NumRounds * _Moniker.Teams.size() * 2;
+        Scorekeeper.InitializeTeams(_Moniker.Teams.size());
         _Moniker.CurrentTeam = 0;
         Intent i = new Intent(Screen_End.this, Screen_Ready.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

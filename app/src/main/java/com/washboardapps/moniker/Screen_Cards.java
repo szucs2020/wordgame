@@ -1,6 +1,7 @@
 package com.washboardapps.moniker;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,7 @@ import android.widget.RelativeLayout;
 
 import com.washboardapps.billing.IabHelper;
 import com.washboardapps.billing.IabResult;
+import com.washboardapps.billing.Inventory;
 import com.washboardapps.billing.Purchase;
 
 import java.util.ArrayList;
@@ -22,10 +24,15 @@ public class Screen_Cards extends Activity {
     private CardPackAdapter adapter;
     private IabHelper mHelper;
 
-    private IabHelper.OnConsumeFinishedListener ConsumedListener;
+//    private IabHelper.OnConsumeFinishedListener ConsumedListener;
     private IabHelper.OnIabPurchaseFinishedListener mPurchaseFinishedListener;
 
+    //syncronization variables
+    private boolean billingFinished = false;
+    private boolean adapterFinished = false;
+
     private final String SKU_CARDS_PACK1 = "wordgame.pack.adult";
+//    private final String SKU_CARDS_PACK1 = "android.test.purchased";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +57,9 @@ public class Screen_Cards extends Activity {
             public void onIabSetupFinished(IabResult result) {
                 if (!result.isSuccess()) {
                     System.err.println("Problem setting up In-app Billing: " + result);
+                } else {
+                    billingFinished = true;
+                    QueryInventory();
                 }
             }
         });
@@ -61,58 +71,104 @@ public class Screen_Cards extends Activity {
                 try{
 
                     if (result.isFailure()) {
-                        // Handle error
-                        System.out.println("Purchase failed");
                         return;
                     }
 
                     //consume the purchase immediately
                     else if (purchase.getSku().equals(SKU_CARDS_PACK1)) {
-                        mHelper.consumeAsync(purchase, ConsumedListener);
+                        UnhidePack(1);
                     }
 
-                } catch (IabHelper.IabAsyncInProgressException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
 
-        //callback when item is consumed
-        ConsumedListener = new IabHelper.OnConsumeFinishedListener(){
+        //Add the view elements for each pack
+        cardPacks = (ListView) findViewById(R.id.card_list_view);
+        final ArrayList<CardPack> packList = LibraryDB.getCardPacks();
+        adapter = new CardPackAdapter(this, packList);
+        cardPacks.setAdapter(adapter);
+
+        cardPacks.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
-            public void onConsumeFinished(Purchase purchase, IabResult result) {
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                cardPacks.removeOnLayoutChangeListener(this);
+                adapterFinished = true;
+                QueryInventory();
+            }
+        });
+        adapter.notifyDataSetChanged();
+    }
 
-                if (purchase.getSku().equals(SKU_CARDS_PACK1)){
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        System.out.println("onActivityResult(" + requestCode + "," + resultCode + "," + data);
 
-                    ListView cardPacks = (ListView) findViewById(R.id.card_list_view);
-                    RelativeLayout rl = (RelativeLayout)cardPacks.getChildAt(1);
-                    RelativeLayout rl2 = (RelativeLayout)rl.findViewById(R.id.pack_list_overlap_layout);
-                    CheckBox cbEnabled = (CheckBox) rl2.getChildAt(0);
-                    Button buyButton = (Button) rl2.getChildAt(1);
+        // Pass on the activity result to the helper for handling
+        if (!mHelper.handleActivityResult(requestCode, resultCode, data)) {
+            // not handled, so handle it ourselves (here's where you'd
+            // perform any handling of activity results not related to in-app
+            // billing...
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+        else {
+//            System.out.println("onActivityResult handled by IABUtil.");
+        }
+    }
 
-                    buyButton.setVisibility(View.GONE);
-                    cbEnabled.setVisibility(View.VISIBLE);
+    private void QueryInventory(){
+
+        final IabHelper.QueryInventoryFinishedListener inventoryFinishedListener
+                = new IabHelper.QueryInventoryFinishedListener() {
+            public void onQueryInventoryFinished(IabResult result,
+                                                 Inventory inventory) {
+
+                if (result.isFailure()) {
+                    System.out.println("QUERY INVENTORY FAILED");
+                }
+                else {
+                    // does the user have the premium upgrade?
+                    boolean bHasPack1 = inventory.hasPurchase(SKU_CARDS_PACK1);
+                    System.out.println("has pack 1: " + bHasPack1);
+                    if (bHasPack1){
+                        UnhidePack(1);
+                    }
                 }
             }
         };
 
-        cardPacks = (ListView) findViewById(R.id.card_list_view);
-        final ArrayList<CardPack> recipeList = LibraryDB.getCardPacks();
-        adapter = new CardPackAdapter(this, recipeList);
-        cardPacks.setAdapter(adapter);
+        if (billingFinished && adapterFinished){
+            //query the purchases and open the packs up if they are owned
+            try {
+                mHelper.queryInventoryAsync(inventoryFinishedListener);
+            } catch (IabHelper.IabAsyncInProgressException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-//        ListView cardPacks = (ListView) findViewById(R.id.card_list_view);
-//        RelativeLayout rl = (RelativeLayout)cardPacks.getChildAt(1);
-//        RelativeLayout rl2 = (RelativeLayout)rl.findViewById(R.id.pack_list_overlap_layout);
-//        CheckBox cbEnabled = (CheckBox) rl2.getChildAt(0);
-//        Button buyButton = (Button) rl2.getChildAt(1);
+    //Makes the pack checkbox visible given a pack number
+    private void UnhidePack(int pack){
+
+        ListView cardPacks = (ListView) findViewById(R.id.card_list_view);
+        RelativeLayout rl = (RelativeLayout)cardPacks.getChildAt(pack);
+        RelativeLayout rl2 = (RelativeLayout)rl.findViewById(R.id.pack_list_overlap_layout);
+        CheckBox cbEnabled = (CheckBox) rl2.getChildAt(0);
+        Button buyButton = (Button) rl2.getChildAt(1);
+
+        buyButton.setVisibility(View.GONE);
+        cbEnabled.setVisibility(View.VISIBLE);
     }
 
     private void BuyCardPack(int pack){
-        try {
 
+        ListView lv = (ListView) findViewById(R.id.card_list_view);
+
+        try {
             if (pack == 2){
-                mHelper.launchPurchaseFlow(this, "wordgame.pack.adult", 10001, mPurchaseFinishedListener, "mypurchasetoken");
+                mHelper.launchPurchaseFlow(this, SKU_CARDS_PACK1, 10001, mPurchaseFinishedListener, "mypurchasetoken");
             } else {
                 //add a message saying "this card pack is not available yet"
                 System.err.println("ERROR: BUYING CARD PACK WHICH DOES NOT EXIST YET");

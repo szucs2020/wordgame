@@ -79,7 +79,8 @@
                         android:enabled="true"
                         android:textColor="@color/primary_text_default_material_dark"
                         android:textSize="40sp"
-                        android:onClick="Start_Help" />
+                        android:onClick="Start_Help"
+                        android:visibility="gone"/>
 
                 </LinearLayout>
 

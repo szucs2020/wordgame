@@ -149,10 +149,10 @@
 
             <Button
                 android:layout_width="100dp"
-                android:layout_height="fill_parent"
+                android:layout_height="60dp"
                 android:text="@string/button_correct"
                 android:id="@+id/Game_Yay"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="bottom"
                 android:enabled="true"
                 android:textColor="@color/primary_text_default_material_dark"
                 android:textSize="25sp"
@@ -162,10 +162,10 @@
 
             <Button
                 android:layout_width="100dp"
-                android:layout_height="fill_parent"
+                android:layout_height="60dp"
                 android:text="@string/button_pass"
                 android:id="@+id/Game_Pass"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="bottom"
                 android:enabled="true"
                 android:textColor="@color/primary_text_default_material_dark"
                 android:textSize="25sp"
@@ -175,10 +175,10 @@
 
             <Button
                 android:layout_width="100dp"
-                android:layout_height="fill_parent"
+                android:layout_height="60dp"
                 android:text="@string/button_incorrect"
                 android:id="@+id/Game_Boo"
-                android:layout_gravity="center_horizontal"
+                android:layout_gravity="bottom"
                 android:enabled="true"
                 android:textColor="@color/primary_text_default_material_dark"
                 android:textSize="25sp"

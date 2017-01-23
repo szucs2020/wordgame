@@ -21,8 +21,8 @@ public class CardPackAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private ArrayList<CardPack> dataSource;
 
-    public CardPackAdapter(Context context, ArrayList<CardPack> items) {
-        context = context;
+    public CardPackAdapter(Context c, ArrayList<CardPack> items) {
+        context = c;
         dataSource = items;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -64,12 +64,14 @@ public class CardPackAdapter extends BaseAdapter {
 
         buyButton.setId(pack.packID);
         cbEnabled.setId(pack.packID);
-        cbEnabled.setChecked(pack.enabled);
+        cbEnabled.setChecked(_Moniker.Library.GetEnabled(pack.packID));
+        System.out.println("Loading pack: " + pack.packID + " " + _Moniker.Library.GetEnabled(pack.packID));
 
         //create the on click listener to change the database value when the checkbox is changed
         cbEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                System.out.println(buttonView.getId() + " CHANGING BOOLEAN: " + isChecked);
                 _Moniker.Library.SetEnabled(buttonView.getId(), isChecked);
             }
         });

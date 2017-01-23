@@ -39,12 +39,14 @@
     <string name="button_rounds_minus">-</string>
     <string name="button_rounds_start">03</string>
     <string name="rounds_default_number">03</string>
+    <string name="round_timer_default_number">60</string>
     <string name="updating_text">Updating Cards...</string>
     <string name="title_activity_screen__cards__settings">Screen_Cards_Settings</string>
 
     <!-- Strings related to shared preferences -->
     <string name="sp_rangebar_index_left">sp_rangebar_index_left</string>
     <string name="sp_rangebar_index_right">sp_rangebar_index_right</string>
+    <string name="sp_options_round_timer">sp_options_round_timer</string>
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

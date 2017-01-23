@@ -227,9 +227,9 @@ public class LibraryDB extends SQLiteOpenHelper {
         new Thread(new Runnable() {
             public void run() {
 
-                db = getWritableDatabase();
+                SQLiteDatabase db2 = getWritableDatabase();
                 String query = "SELECT * FROM " + TABLE_LIBRARY + " WHERE Called <> 0";
-                Cursor cursor = db.rawQuery(query, null);
+                Cursor cursor = db2.rawQuery(query, null);
 
                 while (cursor.moveToNext()){
 
@@ -242,15 +242,14 @@ public class LibraryDB extends SQLiteOpenHelper {
                             + ",TimeOut=TimeOut + " + cursor.getInt(15)
                             + " where ID=" + cursor.getInt(0) + ";";
 
-                    System.out.println(q);
                     if (MySQLConnector.nonquery(q) > 0){
-                        db.execSQL("UPDATE " + TABLE_LIBRARY
+                        db2.execSQL("UPDATE " + TABLE_LIBRARY
                                 + " SET Called=0, Correct=0, Skipped=0, Buzzed=0, TimeOut=0, AvgTime=0 WHERE ID = " + cursor.getInt(0));
                     } else {
                         System.err.println("There was a problem uploading the statistics to the server.");
                     }
                 }
-                db.close();
+                db2.close();
             }
         }).start();
         return true;

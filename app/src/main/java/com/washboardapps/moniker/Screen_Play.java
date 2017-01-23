@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,11 +19,13 @@ import java.util.TimerTask;
 
 public class Screen_Play extends Activity {
 
+    private static final String TAG = "DebugTag";
+
     private final android.os.Handler handler = new android.os.Handler();
     private Timer timer;
     private TextView gameTimer;
     private Card currentCard;
-    private double timeVal = 60.0 + 1.0;
+    private double timeVal = (double)_Moniker.RoundTimer + 1.0;
     private double cardStartTime;
 
     private String packString;
@@ -56,7 +59,6 @@ public class Screen_Play extends Activity {
         }
         packString = packString.substring(0, packString.length() - 1);
         packString = packString + ")";
-        System.out.println("PACK STRING: " + packString);
 
         timer = new Timer();
         timer.schedule(new TimerTask() {
@@ -146,6 +148,7 @@ public class Screen_Play extends Activity {
         }
 
         currentCard = _Moniker.Library.GetNextCard(packString, difficultyString);
+        Log.d(TAG, "Card " + currentCard.getID() + ": " + currentCard.getTitle());
         UpdateScreen();
         cardStartTime = timeVal;
     }
@@ -199,6 +202,7 @@ public class Screen_Play extends Activity {
     private void EndRound(){
 
         UpdateCardEntry(true);
+        currentCard = null;
 
         timer.cancel();
         Scorekeeper.NextTeam();

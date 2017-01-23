@@ -31,6 +31,12 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:paddingTop="50dp" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray"/>
+
         <RelativeLayout
             android:id="@+id/pack_list_overlap_layout"
             android:layout_width="wrap_content"
@@ -44,7 +50,8 @@
                 android:textSize="28dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center" />
+                android:gravity="center"
+                android:textColor="@color/primary_text_default_material_dark"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -58,7 +65,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="left" />
+                    android:gravity="left"
+                    android:textColor="@color/primary_text_default_material_dark"/>
 
                 <TextView
                     android:id="@+id/rangebar_right_label"
@@ -67,7 +75,8 @@
                     android:layout_marginRight="1dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="right" />
+                    android:gravity="right"
+                    android:textColor="@color/primary_text_default_material_dark"/>
 
             </LinearLayout>
         </RelativeLayout>
@@ -79,6 +88,85 @@
             android:layout_height="wrap_content"
             custom:tickCount="11"
             custom:tickHeight="8dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:id="@+id/RoundPicker">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Round Timer"
+                    android:editable="false"
+                    android:textStyle="bold"
+                    android:textIsSelectable="false"
+                    android:gravity="left"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="25dp"
+                    android:numeric="integer"
+                    android:focusableInTouchMode="false"
+                    android:layout_weight="80"/>
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_rounds_minus"
+                    android:id="@+id/Timer_Minus"
+                    android:layout_gravity="center"
+                    android:enabled="true"
+                    android:textColor="@color/primary_text_default_material_dark"
+                    android:textSize="25dp"
+                    android:onClick="Timer_Minus"
+                    android:gravity="center"
+                    android:layout_marginRight="10dp"
+                    android:nestedScrollingEnabled="true"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/round_timer_default_number"
+                    android:id="@+id/Timer_Value"
+                    android:editable="false"
+                    android:textStyle="bold"
+                    android:textIsSelectable="false"
+                    android:gravity="center"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="25dp"
+                    android:numeric="integer"
+                    android:focusableInTouchMode="false"
+                    android:layout_weight="1"/>
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_rounds_plus"
+                    android:id="@+id/Timer_Plus"
+                    android:enabled="true"
+                    android:textColor="@color/primary_text_default_material_dark"
+                    android:textSize="25dp"
+                    android:onClick="Timer_Plus"
+                    android:gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"/>
+                </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/darker_gray"/>
 
     </LinearLayout>
 </RelativeLayout>
