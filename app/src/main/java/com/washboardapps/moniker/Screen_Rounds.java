@@ -32,8 +32,7 @@ public class Screen_Rounds extends Activity {
 
     public void StartGame(View view){
         _Moniker.RoundsLeft = _Moniker.NumRounds * _Moniker.Teams.size() * 2;
-        Intent i = new Intent(this, Screen_Ready.class);
-        startActivity(i);
+        Util.PushPage(this, Screen_Ready.class);
     }
 
     //updates points/rounds text box

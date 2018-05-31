@@ -64,26 +64,22 @@ public class Screen_Main extends Activity {
 
     //Starts game activity
     public void Start_Pregame(View view) {
-        Intent i = new Intent(this, Screen_Teams.class);
-        startActivity(i);
+        Util.PushPage(this, Screen_Teams.class);
     }
 
     //Starts options activity
     public void Start_Options(View view) {
-        Intent i = new Intent(this, Screen_Options.class);
-        startActivity(i);
+        Util.PushPage(this, Screen_Options.class);
     }
 
     //Starts options activity
     public void Start_Cards(View view) {
-        Intent i = new Intent(this, Screen_Cards.class);
-        startActivity(i);
+        Util.PushPage(this, Screen_Cards.class);
     }
 
     //Starts options activity
     public void Start_Help(View view) {
-        Intent i = new Intent(this, Screen_Help.class);
-        startActivity(i);
+        Util.PushPage(this, Screen_Help.class);
     }
 
     private class UpdateCardsTask extends AsyncTask<String, Void, Boolean> {

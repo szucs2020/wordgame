@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -86,9 +87,7 @@ public class Screen_Play extends Activity {
         builder.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(Screen_Play.this, Screen_Main.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(i);
+                        Util.ReplacePage(Screen_Play.this, Screen_Main.class);
                     }
                 });
         AlertDialog alert = builder.create();
@@ -213,9 +212,6 @@ public class Screen_Play extends Activity {
 
         if (_Moniker.RoundsLeft == 0){
 
-            Intent i = new Intent(Screen_Play.this, Screen_End.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
             //find out which team won or if the game is a tie
             for (int x = 0; x < _Moniker.Teams.size(); x++){
 
@@ -248,8 +244,10 @@ public class Screen_Play extends Activity {
             } else {
                 winTitle = "Its a tie!";
             }
-            i.putExtra("winTitle", winTitle);
-            startActivity(i);
+
+            HashMap<String, String> extras = new HashMap<String, String>();
+            extras.put("winTitle", winTitle);
+            Util.ReplacePage(Screen_Play.this, Screen_End.class, extras);
         } else {
             this.finish();
         }

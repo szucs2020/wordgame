@@ -42,9 +42,7 @@ public class Screen_Ready extends Activity {
         builder.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(Screen_Ready.this, Screen_Main.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(i);
+                        Util.ReplacePage(Screen_Ready.this, Screen_Main.class);
                     }
                 });
         AlertDialog alert = builder.create();
@@ -52,8 +50,7 @@ public class Screen_Ready extends Activity {
     }
 
     public void Start_Round(View view){
-        Intent i = new Intent(this, Screen_Play.class);
-        startActivity(i);
+        Util.PushPage(this, Screen_Play.class);
     }
 
     private void UpdateScreen(){

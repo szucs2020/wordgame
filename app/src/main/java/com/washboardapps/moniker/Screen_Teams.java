@@ -27,7 +27,6 @@ public class Screen_Teams extends Activity {
     }
 
     private void Start_Rounds(){
-        Intent i = new Intent(this, Screen_Rounds.class);
-        startActivity(i);
+        Util.PushPage(this, Screen_Rounds.class);
     }
 }

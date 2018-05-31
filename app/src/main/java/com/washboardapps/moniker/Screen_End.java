@@ -43,9 +43,7 @@ public class Screen_End extends Activity {
         builder.setPositiveButton("Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Intent i = new Intent(Screen_End.this, Screen_Main.class);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(i);
+                        Util.ReplacePage(Screen_End.this, Screen_Main.class);
                     }
                 });
         AlertDialog alert = builder.create();
@@ -57,15 +55,12 @@ public class Screen_End extends Activity {
         _Moniker.RoundsLeft = _Moniker.NumRounds * _Moniker.Teams.size() * 2;
         Scorekeeper.InitializeTeams(_Moniker.Teams.size());
         _Moniker.CurrentTeam = 0;
-        Intent i = new Intent(Screen_End.this, Screen_Ready.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+
+        Util.ReplacePage(this, Screen_Ready.class);
     }
 
     public void Menu(View view){
-        Intent i = new Intent(Screen_End.this, Screen_Main.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(i);
+        Util.ReplacePage(this, Screen_Main.class);
     }
 
     private void UpdateScreen(){
